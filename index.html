@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>专业八字详批 v5.7 - 逻辑对齐修复版</title>
+    <title>专业八字详批 v5.8 - 地区选择版</title>
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
     <style>
         :root { --wood: #2e7d32; --fire: #d32f2f; --earth: #795548; --metal: #f9a825; --water: #1565c0; }
@@ -11,13 +11,14 @@
         .header { background: #2c3e50; color: #fff; padding: 15px; text-align: center; }
         .form-section { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #fafafa; border-bottom: 1px solid #eee; }
         .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #666; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
-        button { grid-column: 1 / -1; padding: 15px; background: #b71c1c; color: #fff; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        button { grid-column: 1 / -1; padding: 15px; background: #b71c1c; color: #fff; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #961515; }
 
         .result-section { padding: 30px; display: none; }
         .bazi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
         .column { border: 1px solid #eee; border-radius: 8px; background: #fff; display: flex; flex-direction: column; text-align: center; }
-        .pillar-label { background: #f1f2f6; padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; }
+        .pillar-label { background: #f1f2f6; padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; letter-spacing: 2px; }
         .gz-main-zone { padding: 20px 0; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .shishen-main { font-size: 14px; color: #d32f2f; margin-bottom: 8px; font-weight: bold; }
         .gan, .zhi { font-size: 44px; font-weight: bold; line-height: 1.1; }
@@ -36,16 +37,9 @@
         .age-tag { color: #b71c1c; font-weight: bold; font-size: 13px; margin-bottom: 4px; }
         
         .color-木 { color: var(--wood); } .color-火 { color: var(--fire); } .color-土 { color: var(--earth); } .color-金 { color: var(--metal); } .color-水 { color: var(--water); }
+        .footer-contact { margin-top: 40px; padding: 30px; border-top: 2px solid #eee; text-align: center; background: #fafafa; border-radius: 0 0 12px 12px; }
     </style>
 </head>
-<div style="margin-top: 40px; padding: 20px; border-top: 2px solid #eee; text-align: center; background: #fafafa;">
-<h4 style="color: #2c3e50; margin-bottom: 10px;">算命详批 / 商务合作</h4>
-<p style="font-size: 16px; color: #333;">
-    <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; vertical-align: middle; margin-right: 5px;">微信</span>
-    <strong>wechat : tntntaa</strong>
-</p>
-<p style="font-size: 12px; color: #999; margin-top: 5px;">添加时请备注“八字咨询”</p>
-</div>
 <body>
 
 <div class="card">
@@ -53,7 +47,43 @@
     <div class="form-section">
         <div class="input-group"><label>公历生日</label><input type="datetime-local" id="birthTime" value="1995-10-01T10:00"></div>
         <div class="input-group"><label>性别</label><select id="gender"><option value="1">男 (乾造)</option><option value="0">女 (坤造)</option></select></div>
-        <div class="input-group"><label>经度</label><input type="number" id="longitude" value="116.40" step="0.01"></div>
+        <div class="input-group">
+            <label>国家/地区</label>
+            <select id="regionSelect" onchange="updateLongitude()">
+                <optgroup label="中国大陆">
+                    <option value="116.40">中国 - 北京</option>
+                    <option value="121.47">中国 - 上海</option>
+                    <option value="113.26">中国 - 广州</option>
+                    <option value="114.05">中国 - 深圳</option>
+                    <option value="104.06">中国 - 成都</option>
+                    <option value="108.94">中国 - 西安</option>
+                </optgroup>
+                <optgroup label="港澳台">
+                    <option value="114.17">中国 - 香港</option>
+                    <option value="113.54">中国 - 澳门</option>
+                    <option value="121.50">中国 - 台北</option>
+                </optgroup>
+                <optgroup label="东南亚">
+                    <option value="103.85">新加坡</option>
+                    <option value="101.68">马来西亚 - 吉隆坡</option>
+                    <option value="100.33">马来西亚 - 槟城</option>
+                </optgroup>
+                <optgroup label="北美及其他">
+                    <option value="-122.41">美国 - 旧金山</option>
+                    <option value="-74.00">美国 - 纽约</option>
+                    <option value="-118.24">美国 - 洛杉矶</option>
+                    <option value="-79.38">加拿大 - 多伦多</option>
+                    <option value="-123.12">加拿大 - 温哥华</option>
+                    <option value="151.20">澳大利亚 - 悉尼</option>
+                    <option value="0.12">英国 - 伦敦</option>
+                </optgroup>
+                <option value="custom">-- 手动输入经度 --</option>
+            </select>
+        </div>
+        <div class="input-group" id="customLonGroup" style="display:none;">
+            <label>经度修正</label>
+            <input type="number" id="longitude" value="116.40" step="0.01">
+        </div>
         <button onclick="renderBazi()">分析命局</button>
     </div>
 
@@ -72,12 +102,34 @@
             <div class="liunian-grid" id="liunianGrid"></div>
         </div>
     </div>
+
+    <div class="footer-contact">
+        <h4 style="color: #2c3e50; margin-bottom: 10px;">算命详批 / 商务合作</h4>
+        <p style="font-size: 16px; color: #333;">
+            <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; vertical-align: middle; margin-right: 5px;">微信</span>
+            <strong>wechat : tntntaa</strong>
+        </p>
+        <p style="font-size: 12px; color: #999; margin-top: 5px;">添加时请备注“八字咨询”</p>
+    </div>
 </div>
 
 <script>
     const wxMap = {'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水','寅':'木','卯':'木','巳':'火','午':'火','辰':'土','戌':'土','丑':'土','未':'土','申':'金','酉':'金','亥':'水','子':'水'};
     let currentYun = null;
     let birthLunar = null;
+
+    function updateLongitude() {
+        const select = document.getElementById('regionSelect');
+        const customGroup = document.getElementById('customLonGroup');
+        const lonInput = document.getElementById('longitude');
+        
+        if (select.value === 'custom') {
+            customGroup.style.display = 'block';
+        } else {
+            customGroup.style.display = 'none';
+            lonInput.value = select.value;
+        }
+    }
 
     function getShiShen(me, target) {
         const gans = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
@@ -87,7 +139,9 @@
 
     function renderBazi() {
         try {
-            const timeVal = document.getElementById('birthTime').value, lon = parseFloat(document.getElementById('longitude').value), gender = parseInt(document.getElementById('gender').value);
+            const timeVal = document.getElementById('birthTime').value;
+            const lon = parseFloat(document.getElementById('longitude').value);
+            const gender = parseInt(document.getElementById('gender').value);
             if (!timeVal) return;
 
             const solar = Solar.fromDate(new Date(new Date(timeVal).getTime() + (lon - 120) * 4 * 60000));
@@ -96,9 +150,8 @@
             const bazi = lunar.getEightChar();
             const dayGan = bazi.getDayGan();
 
-            document.getElementById('infoText').innerHTML = `${gender?'乾造':'坤造'} | ${lunar.toString()} | 经度修正：${lon}°`;
+            document.getElementById('infoText').innerHTML = `${gender?'乾造':'坤造'} | ${lunar.toString()} | 经度：${lon}°`;
             
-            // 四柱渲染
             const pillars = [
                 { t: '年柱', g: bazi.getYearGan(), z: bazi.getYearZhi(), s: bazi.getYearShiShenGan(), c: bazi.getYearHideGan() },
                 { t: '月柱', g: bazi.getMonthGan(), z: bazi.getMonthZhi(), s: bazi.getMonthShiShenGan(), c: bazi.getMonthHideGan() },
@@ -113,17 +166,14 @@
             });
             document.getElementById('baziGrid').innerHTML = html;
 
-            // 核心逻辑：获取运势对象
             currentYun = bazi.getYun(gender);
-            document.getElementById('startInfo').innerText = `正式起运年份：${currentYun.getStartYear()}年 (此时约 ${currentYun.getStartYear() - solar.getYear() + 1} 岁)`;
+            document.getElementById('startInfo').innerText = `正式起运年份：${currentYun.getStartYear()}年 (命主约 ${currentYun.getStartYear() - solar.getYear() + 1} 岁)`;
             
             let dyHtml = '';
             const dys = currentYun.getDaYun();
-            // 索引从 1 开始是第一步大运，0 是小运/起运前
             for (let i = 1; i <= 8 && i < dys.length; i++) {
                 let dy = dys[i];
                 let gz = dy.getGanZhi();
-                // 动态计算该步大运的岁数区间
                 let startAge = dy.getStartYear() - solar.getYear() + 1;
                 let endAge = dy.getEndYear() - solar.getYear() + 1;
 
@@ -151,7 +201,6 @@
         let lnHtml = '';
         lns.forEach(ln => {
             let gz = ln.getGanZhi();
-            // 严格计算该流年年份对应的虚岁
             let age = ln.getYear() - birthYear + 1;
             lnHtml += `<div class="liunian-box">
                 <div class="age-tag">${age} 岁</div>
@@ -164,6 +213,4 @@
     }
 </script>
 </body>
-
 </html>
-
