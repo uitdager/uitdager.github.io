@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>专业八字详批 v5.7 - 逻辑对齐修复版</title>
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+    <style>
+        :root { --wood: #2e7d32; --fire: #d32f2f; --earth: #795548; --metal: #f9a825; --water: #1565c0; }
+        body { font-family: 'PingFang SC', sans-serif; background: #f0f2f5; padding: 20px; }
+        .card { background: #fff; max-width: 950px; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: #2c3e50; color: #fff; padding: 15px; text-align: center; }
+        .form-section { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #fafafa; border-bottom: 1px solid #eee; }
+        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #666; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        button { grid-column: 1 / -1; padding: 15px; background: #b71c1c; color: #fff; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; }
+
+        .result-section { padding: 30px; display: none; }
+        .bazi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+        .column { border: 1px solid #eee; border-radius: 8px; background: #fff; display: flex; flex-direction: column; text-align: center; }
+        .pillar-label { background: #f1f2f6; padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; }
+        .gz-main-zone { padding: 20px 0; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .shishen-main { font-size: 14px; color: #d32f2f; margin-bottom: 8px; font-weight: bold; }
+        .gan, .zhi { font-size: 44px; font-weight: bold; line-height: 1.1; }
+        .canggan-box { background: #fafafa; flex-grow: 1; padding: 15px 0; border-top: 1px dashed #ddd; display: flex; flex-direction: column; align-items: center; }
+        .canggan-item { font-size: 13px; line-height: 2; display: flex; width: 100%; justify-content: center; }
+        .cg-ss { color: #888; font-size: 11px; margin-left: 6px; width: 45px; text-align: left; }
+
+        .dayun-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .dayun-box { border: 2px solid #eee; padding: 12px; border-radius: 8px; text-align: center; flex: 1; min-width: 105px; cursor: pointer; background: #fff; }
+        .dayun-box.active { border-color: #b71c1c; background: #b71c1c; color: #fff; }
+        .dayun-box.active b { color: #fff !important; }
+
+        .liunian-section { margin-top: 25px; display: none; background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; padding: 20px; }
+        .liunian-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .liunian-box { border: 1px solid #f0f0f0; padding: 10px; text-align: center; background: #fff; }
+        .age-tag { color: #b71c1c; font-weight: bold; font-size: 13px; margin-bottom: 4px; }
+        
+        .color-木 { color: var(--wood); } .color-火 { color: var(--fire); } .color-土 { color: var(--earth); } .color-金 { color: var(--metal); } .color-水 { color: var(--water); }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header"><h2>专业八字详批系统</h2></div>
+    <div class="form-section">
+        <div class="input-group"><label>公历生日</label><input type="datetime-local" id="birthTime" value="1995-10-01T10:00"></div>
+        <div class="input-group"><label>性别</label><select id="gender"><option value="1">男 (乾造)</option><option value="0">女 (坤造)</option></select></div>
+        <div class="input-group"><label>经度</label><input type="number" id="longitude" value="116.40" step="0.01"></div>
+        <button onclick="renderBazi()">分析命局</button>
+    </div>
+
+    <div id="result" class="result-section">
+        <div id="infoText" style="margin-bottom:20px; font-weight: bold; border-left: 4px solid #b71c1c; padding-left: 15px;"></div>
+        <div class="bazi-grid" id="baziGrid"></div>
+
+        <div style="margin-top: 35px;">
+            <h4 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">大运历程 (点击下方方块查看对应流年)</h4>
+            <div id="startInfo" style="margin: 10px 0; font-size: 14px; color: #b71c1c; font-weight: bold;"></div>
+            <div class="dayun-list" id="dayunList"></div>
+        </div>
+
+        <div id="liunianArea" class="liunian-section">
+            <h5 id="liunianTitle" style="margin:0 0 15px 0; color:#2c3e50; border-bottom: 1px solid #ddd; padding-bottom: 10px;">流年明细</h5>
+            <div class="liunian-grid" id="liunianGrid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const wxMap = {'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水','寅':'木','卯':'木','巳':'火','午':'火','辰':'土','戌':'土','丑':'土','未':'土','申':'金','酉':'金','亥':'水','子':'水'};
+    let currentYun = null;
+    let birthLunar = null;
+
+    function getShiShen(me, target) {
+        const gans = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+        const diff = (gans.indexOf(target) - gans.indexOf(me) + 10) % 10;
+        return ["比肩", "劫财", "食神", "伤官", "偏财", "正财", "七杀", "正官", "偏印", "正印"][diff];
+    }
+
+    function renderBazi() {
+        try {
+            const timeVal = document.getElementById('birthTime').value, lon = parseFloat(document.getElementById('longitude').value), gender = parseInt(document.getElementById('gender').value);
+            if (!timeVal) return;
+
+            const solar = Solar.fromDate(new Date(new Date(timeVal).getTime() + (lon - 120) * 4 * 60000));
+            const lunar = solar.getLunar();
+            birthLunar = lunar;
+            const bazi = lunar.getEightChar();
+            const dayGan = bazi.getDayGan();
+
+            document.getElementById('infoText').innerHTML = `${gender?'乾造':'坤造'} | ${lunar.toString()} | 经度修正：${lon}°`;
+            
+            // 四柱渲染
+            const pillars = [
+                { t: '年柱', g: bazi.getYearGan(), z: bazi.getYearZhi(), s: bazi.getYearShiShenGan(), c: bazi.getYearHideGan() },
+                { t: '月柱', g: bazi.getMonthGan(), z: bazi.getMonthZhi(), s: bazi.getMonthShiShenGan(), c: bazi.getMonthHideGan() },
+                { t: '日柱', g: bazi.getDayGan(), z: bazi.getDayZhi(), s: '日主', c: bazi.getDayHideGan() },
+                { t: '时柱', g: bazi.getTimeGan(), z: bazi.getTimeZhi(), s: bazi.getTimeShiShenGan(), c: bazi.getTimeHideGan() }
+            ];
+
+            let html = '';
+            pillars.forEach(p => {
+                let cg = p.c.map(c => `<div class="canggan-item"><span>${c}</span><span class="cg-ss">(${getShiShen(dayGan, c)})</span></div>`).join('');
+                html += `<div class="column"><div class="pillar-label">${p.t}</div><div class="gz-main-zone"><div class="shishen-main">${p.s}</div><div class="gan color-${wxMap[p.g]}">${p.g}</div><div class="zhi color-${wxMap[p.z]}">${p.z}</div></div><div class="canggan-box">${cg}</div></div>`;
+            });
+            document.getElementById('baziGrid').innerHTML = html;
+
+            // 核心逻辑：获取运势对象
+            currentYun = bazi.getYun(gender);
+            document.getElementById('startInfo').innerText = `正式起运年份：${currentYun.getStartYear()}年 (此时约 ${currentYun.getStartYear() - solar.getYear() + 1} 岁)`;
+            
+            let dyHtml = '';
+            const dys = currentYun.getDaYun();
+            // 索引从 1 开始是第一步大运，0 是小运/起运前
+            for (let i = 1; i <= 8 && i < dys.length; i++) {
+                let dy = dys[i];
+                let gz = dy.getGanZhi();
+                // 动态计算该步大运的岁数区间
+                let startAge = dy.getStartYear() - solar.getYear() + 1;
+                let endAge = dy.getEndYear() - solar.getYear() + 1;
+
+                dyHtml += `<div class="dayun-box" onclick="showLN(this, ${i})">
+                    <b class="color-${wxMap[gz[0]]}">${gz}</b><br>
+                    <span style="font-size:12px">${startAge} - ${endAge} 岁</span><br>
+                    <small style="color:#999">${dy.getStartYear()}年</small>
+                </div>`;
+            }
+            document.getElementById('dayunList').innerHTML = dyHtml;
+            document.getElementById('liunianArea').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+        } catch (e) { console.error(e); }
+    }
+
+    function showLN(el, idx) {
+        document.querySelectorAll('.dayun-box').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+
+        const dy = currentYun.getDaYun()[idx];
+        const lns = dy.getLiuNian();
+        const birthYear = birthLunar.getSolar().getYear();
+        
+        document.getElementById('liunianTitle').innerText = `${dy.getGanZhi()}运 期间流年 (虚岁对照)`;
+        let lnHtml = '';
+        lns.forEach(ln => {
+            let gz = ln.getGanZhi();
+            // 严格计算该流年年份对应的虚岁
+            let age = ln.getYear() - birthYear + 1;
+            lnHtml += `<div class="liunian-box">
+                <div class="age-tag">${age} 岁</div>
+                <b class="color-${wxMap[gz[0]]}" style="font-size:16px">${gz}</b><br>
+                <small style="color:#888">${ln.getYear()}年</small>
+            </div>`;
+        });
+        document.getElementById('liunianGrid').innerHTML = lnHtml;
+        document.getElementById('liunianArea').style.display = 'block';
+    }
+</script>
+</body>
+</html>
