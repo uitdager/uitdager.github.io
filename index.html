@@ -2,157 +2,188 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>专业八字详批 v5.8 - 地区选择版</title>
+    <title>专业八字详批 v6.2 - 视觉优化版</title>
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
     <style>
         :root { --wood: #2e7d32; --fire: #d32f2f; --earth: #795548; --metal: #f9a825; --water: #1565c0; }
-        body { font-family: 'PingFang SC', sans-serif; background: #f0f2f5; padding: 20px; }
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f0f2f5; padding: 20px; }
         .card { background: #fff; max-width: 950px; margin: 0 auto; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.1); overflow: hidden; }
         .header { background: #2c3e50; color: #fff; padding: 15px; text-align: center; }
-        .form-section { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #fafafa; border-bottom: 1px solid #eee; }
+        .form-section { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; background: #fafafa; border-bottom: 1px solid #eee; }
         .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #666; }
         input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
         button { grid-column: 1 / -1; padding: 15px; background: #b71c1c; color: #fff; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #961515; }
+        button:hover { background: #961515; transform: translateY(-1px); }
 
+        /* 结果展示区样式 */
         .result-section { padding: 30px; display: none; }
         .bazi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
-        .column { border: 1px solid #eee; border-radius: 8px; background: #fff; display: flex; flex-direction: column; text-align: center; }
-        .pillar-label { background: #f1f2f6; padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; letter-spacing: 2px; }
-        .gz-main-zone { padding: 20px 0; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .column { border: 1px solid #eee; border-radius: 8px; background: #fff; text-align: center; }
+        .pillar-label { background: #f1f2f6; padding: 10px 0; border-bottom: 1px solid #eee; font-weight: bold; }
+        .gz-main-zone { padding: 20px 0; min-height: 180px; display: flex; flex-direction: column; justify-content: center; }
         .shishen-main { font-size: 14px; color: #d32f2f; margin-bottom: 8px; font-weight: bold; }
         .gan, .zhi { font-size: 44px; font-weight: bold; line-height: 1.1; }
-        .canggan-box { background: #fafafa; flex-grow: 1; padding: 15px 0; border-top: 1px dashed #ddd; display: flex; flex-direction: column; align-items: center; }
-        .canggan-item { font-size: 13px; line-height: 2; display: flex; width: 100%; justify-content: center; }
-        .cg-ss { color: #888; font-size: 11px; margin-left: 6px; width: 45px; text-align: left; }
-
+        .canggan-box { background: #fafafa; padding: 15px 0; border-top: 1px dashed #ddd; font-size: 12px; color: #666; }
         .dayun-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
-        .dayun-box { border: 2px solid #eee; padding: 12px; border-radius: 8px; text-align: center; flex: 1; min-width: 105px; cursor: pointer; background: #fff; }
+        .dayun-box { border: 2px solid #eee; padding: 12px; border-radius: 8px; text-align: center; flex: 1; min-width: 100px; cursor: pointer; background: #fff; color: #333; }
         .dayun-box.active { border-color: #b71c1c; background: #b71c1c; color: #fff; }
-        .dayun-box.active b { color: #fff !important; }
-
-        .liunian-section { margin-top: 25px; display: none; background: #fcfcfc; border: 1px solid #eee; border-radius: 8px; padding: 20px; }
-        .liunian-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .liunian-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top:15px; }
         .liunian-box { border: 1px solid #f0f0f0; padding: 10px; text-align: center; background: #fff; }
-        .age-tag { color: #b71c1c; font-weight: bold; font-size: 13px; margin-bottom: 4px; }
         
         .color-木 { color: var(--wood); } .color-火 { color: var(--fire); } .color-土 { color: var(--earth); } .color-金 { color: var(--metal); } .color-水 { color: var(--water); }
-        .footer-contact { margin-top: 40px; padding: 30px; border-top: 2px solid #eee; text-align: center; background: #fafafa; border-radius: 0 0 12px 12px; }
+
+        /* 优化后的联系卡片样式 */
+        .footer-contact { 
+            margin: 40px 20px 30px; 
+            padding: 25px; 
+            border: 1px solid #eaeaea; 
+            border-radius: 10px; 
+            background-color: #f8f9fa; 
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+        .footer-contact h4 { margin: 0 0 12px; color: #333; font-size: 18px; letter-spacing: 1px; }
+        .wechat-badge { 
+            display: inline-flex; 
+            align-items: center; 
+            background: #fff; 
+            padding: 8px 20px; 
+            border-radius: 50px; 
+            border: 1px solid #07C160;
+            color: #07C160;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .wechat-id { color: #333; margin-left: 8px; font-family: 'Courier New', Courier, monospace; }
+        .contact-note { font-size: 12px; color: #999; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <div class="header"><h2>专业八字详批系统</h2></div>
+    <div class="header"><h2 id="t-title">专业八字详批系统</h2></div>
+    
     <div class="form-section">
-        <div class="input-group"><label>公历生日</label><input type="datetime-local" id="birthTime" value="1995-10-01T10:00"></div>
-        <div class="input-group"><label>性别</label><select id="gender"><option value="1">男 (乾造)</option><option value="0">女 (坤造)</option></select></div>
+        <div class="input-group"><label id="t-birth">公历生日</label><input type="datetime-local" id="birthTime" value="1995-10-01T10:00"></div>
+        <div class="input-group"><label id="t-gender">性别</label><select id="gender"><option value="1">男 (乾造)</option><option value="0">女 (坤造)</option></select></div>
         <div class="input-group">
-            <label>国家/地区</label>
+            <label id="t-region">国家/地区</label>
             <select id="regionSelect" onchange="updateLongitude()">
-                <optgroup label="中国大陆">
-                    <option value="116.40">中国 - 北京</option>
-                    <option value="121.47">中国 - 上海</option>
-                    <option value="113.26">中国 - 广州</option>
-                    <option value="114.05">中国 - 深圳</option>
-                    <option value="104.06">中国 - 成都</option>
-                    <option value="108.94">中国 - 西安</option>
+                <optgroup id="g-cn" label="中国大陆">
+                    <option value="116.40">北京</option>
+                    <option value="121.47">上海</option>
+                    <option value="113.26">广州</option>
+                    <option value="114.05">深圳</option>
                 </optgroup>
-                <optgroup label="港澳台">
-                    <option value="114.17">中国 - 香港</option>
-                    <option value="113.54">中国 - 澳门</option>
-                    <option value="121.50">中国 - 台北</option>
+                <optgroup id="g-hmt" label="港澳台">
+                    <option value="114.17">香港</option>
+                    <option value="113.54">澳门</option>
+                    <option value="121.50">台北</option>
                 </optgroup>
-                <optgroup label="东南亚">
+                <optgroup id="g-sea" label="东南亚/海外">
                     <option value="103.85">新加坡</option>
-                    <option value="101.68">马来西亚 - 吉隆坡</option>
-                    <option value="100.33">马来西亚 - 槟城</option>
+                    <option value="101.68">吉隆坡</option>
+                    <option value="-122.41">旧金山</option>
                 </optgroup>
-                <optgroup label="北美及其他">
-                    <option value="-122.41">美国 - 旧金山</option>
-                    <option value="-74.00">美国 - 纽约</option>
-                    <option value="-118.24">美国 - 洛杉矶</option>
-                    <option value="-79.38">加拿大 - 多伦多</option>
-                    <option value="-123.12">加拿大 - 温哥华</option>
-                    <option value="151.20">澳大利亚 - 悉尼</option>
-                    <option value="0.12">英国 - 伦敦</option>
-                </optgroup>
-                <option value="custom">-- 手动输入经度 --</option>
+                <option id="o-custom" value="custom">-- 手动输入 --</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label id="t-lang">界面语言</label>
+            <select id="langSelect" onchange="toggleLanguage()">
+                <option value="zh-hans">简体中文</option>
+                <option value="zh-hant">繁體中文</option>
             </select>
         </div>
         <div class="input-group" id="customLonGroup" style="display:none;">
-            <label>经度修正</label>
-            <input type="number" id="longitude" value="116.40" step="0.01">
+            <label id="t-lon-label">经度修正</label><input type="number" id="longitude" value="116.40" step="0.01">
         </div>
-        <button onclick="renderBazi()">分析命局</button>
+        <button onclick="renderBazi()" id="t-btn">分析命局</button>
     </div>
 
     <div id="result" class="result-section">
         <div id="infoText" style="margin-bottom:20px; font-weight: bold; border-left: 4px solid #b71c1c; padding-left: 15px;"></div>
         <div class="bazi-grid" id="baziGrid"></div>
-
         <div style="margin-top: 35px;">
-            <h4 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">大运历程 (点击下方方块查看对应流年)</h4>
+            <h4 id="t-dy-title" style="border-bottom: 2px solid #eee; padding-bottom: 10px;">大运历程 (点击方块看流年)</h4>
             <div id="startInfo" style="margin: 10px 0; font-size: 14px; color: #b71c1c; font-weight: bold;"></div>
             <div class="dayun-list" id="dayunList"></div>
         </div>
-
-        <div id="liunianArea" class="liunian-section">
-            <h5 id="liunianTitle" style="margin:0 0 15px 0; color:#2c3e50; border-bottom: 1px solid #ddd; padding-bottom: 10px;">流年明细</h5>
+        <div id="liunianArea" style="display:none;">
+            <h5 id="t-ln-title" style="margin:25px 0 15px 0; color:#2c3e50; border-bottom: 1px solid #ddd; padding-bottom: 10px;">流年明细</h5>
             <div class="liunian-grid" id="liunianGrid"></div>
         </div>
     </div>
 
     <div class="footer-contact">
-        <h4 style="color: #2c3e50; margin-bottom: 10px;">算命详批 / 商务合作</h4>
-        <p style="font-size: 16px; color: #333;">
-            <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; vertical-align: middle; margin-right: 5px;">微信</span>
-            <strong>wechat : tntntaa</strong>
-        </p>
-        <p style="font-size: 12px; color: #999; margin-top: 5px;">添加时请备注“八字咨询”</p>
+        <h4 id="t-footer-h">算命详批 / 商务合作</h4>
+        <div class="wechat-badge">
+            <span id="t-wechat-label">微信联系</span>
+            <span class="wechat-id">tntntaa</span>
+        </div>
+        <p class="contact-note" id="t-footer-note">添加时请备注“八字咨询”</p>
     </div>
 </div>
 
 <script>
+    // 简繁映射
+    const s2t = {"专业八字详批系统":"專業八字詳批系統","公历生日":"公曆生日","性别":"性別","男 (乾造)":"男 (乾造)","女 (坤造)":"女 (坤造)","国家/地区":"國家/地區","界面语言":"界面語言","分析命局":"分析命局","经度修正":"經度修正","中国大陆":"中國大陸","港澳台":"港澳台","东南亚/海外":"東南亞/海外","北京":"北京","上海":"上海","广州":"廣州","深圳":"深圳","香港":"香港","澳门":"澳門","台北":"台北","新加坡":"新加坡","吉隆坡":"吉隆坡","旧金山":"舊金山","-- 手动输入 --":"-- 手動輸入 --","大运历程 (点击方块看流年)":"大運歷程 (點擊方塊看流年)","流年明细":"流年明細","算命详批 / 商务合作":"算命詳批 / 商務合作","微信联系":"微信聯繫","添加时请备注“八字咨询”":"添加時請備註“八字諮詢”","正式起运年份":"正式起運年份","岁":"歲","比肩":"比肩","劫财":"劫財","食神":"食神","伤官":"傷官","偏财":"偏財","正财":"正財","七杀":"七殺","正官":"正官","偏印":"偏印","正印":"正印","年柱":"年柱","月柱":"月柱","日柱":"日柱","时柱":"時柱","日主":"日主"};
+    const t2s = Object.fromEntries(Object.entries(s2t).map(([k, v]) => [v, k]));
     const wxMap = {'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水','寅':'木','卯':'木','巳':'火','午':'火','辰':'土','戌':'土','丑':'土','未':'土','申':'金','酉':'金','亥':'水','子':'水'};
-    let currentYun = null;
-    let birthLunar = null;
+    let currentYun = null, birthLunar = null;
+
+    function toggleLanguage() {
+        const isT = document.getElementById('langSelect').value === 'zh-hant';
+        const map = isT ? s2t : t2s;
+
+        document.querySelectorAll('[id^="t-"]').forEach(el => {
+            let txt = el.innerText;
+            for (let [s, t] of Object.entries(map)) { if (txt === s || txt === t) el.innerText = isT ? (s2t[s]||s) : (t2s[t]||t); }
+        });
+
+        document.getElementById('g-cn').label = isT ? "中國大陸" : "中国大陆";
+        document.getElementById('g-hmt').label = isT ? "港澳台" : "港澳台";
+        document.getElementById('g-sea').label = isT ? "東南亞/海外" : "东南亚/海外";
+        
+        const opts = { "北京":"北京", "上海":"上海", "广州":"廣州", "深圳":"深圳", "香港":"香港", "澳门":"澳門", "台北":"台北", "新加坡":"新加坡", "吉隆坡":"吉隆坡", "旧金山":"舊金山", "-- 手动输入 --":"-- 手動輸入 --" };
+        document.querySelectorAll('#regionSelect option').forEach(opt => {
+            const key = opt.text;
+            for(let [s, t] of Object.entries(opts)) { if(key === s || key === t) opt.text = isT ? t : s; }
+        });
+
+        if (document.getElementById('result').style.display === 'block') renderBazi();
+    }
 
     function updateLongitude() {
         const select = document.getElementById('regionSelect');
-        const customGroup = document.getElementById('customLonGroup');
         const lonInput = document.getElementById('longitude');
-        
-        if (select.value === 'custom') {
-            customGroup.style.display = 'block';
-        } else {
-            customGroup.style.display = 'none';
-            lonInput.value = select.value;
-        }
+        document.getElementById('customLonGroup').style.display = (select.value === 'custom') ? 'block' : 'none';
+        if (select.value !== 'custom') lonInput.value = select.value;
     }
 
     function getShiShen(me, target) {
         const gans = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
         const diff = (gans.indexOf(target) - gans.indexOf(me) + 10) % 10;
-        return ["比肩", "劫财", "食神", "伤官", "偏财", "正财", "七杀", "正官", "偏印", "正印"][diff];
+        let ss = ["比肩", "劫财", "食神", "伤官", "偏财", "正财", "七杀", "正官", "偏印", "正印"][diff];
+        return document.getElementById('langSelect').value === 'zh-hant' ? (s2t[ss] || ss) : ss;
     }
 
     function renderBazi() {
         try {
-            const timeVal = document.getElementById('birthTime').value;
-            const lon = parseFloat(document.getElementById('longitude').value);
-            const gender = parseInt(document.getElementById('gender').value);
+            const isT = document.getElementById('langSelect').value === 'zh-hant';
+            const timeVal = document.getElementById('birthTime').value, lon = parseFloat(document.getElementById('longitude').value), gender = parseInt(document.getElementById('gender').value);
             if (!timeVal) return;
 
             const solar = Solar.fromDate(new Date(new Date(timeVal).getTime() + (lon - 120) * 4 * 60000));
             const lunar = solar.getLunar();
             birthLunar = lunar;
-            const bazi = lunar.getEightChar();
-            const dayGan = bazi.getDayGan();
+            const bazi = lunar.getEightChar(), dayGan = bazi.getDayGan();
 
-            document.getElementById('infoText').innerHTML = `${gender?'乾造':'坤造'} | ${lunar.toString()} | 经度：${lon}°`;
-            
-            const pillars = [
+            let infoStr = `${gender?'乾造':'坤造'} | ${lunar.toString()} | 经度：${lon}°`;
+            if(isT) infoStr = infoStr.split('').map(c => s2t[c] || c).join('').replace("经度", "經度");
+            document.getElementById('infoText').innerHTML = infoStr;
+
+            const pData = [
                 { t: '年柱', g: bazi.getYearGan(), z: bazi.getYearZhi(), s: bazi.getYearShiShenGan(), c: bazi.getYearHideGan() },
                 { t: '月柱', g: bazi.getMonthGan(), z: bazi.getMonthZhi(), s: bazi.getMonthShiShenGan(), c: bazi.getMonthHideGan() },
                 { t: '日柱', g: bazi.getDayGan(), z: bazi.getDayZhi(), s: '日主', c: bazi.getDayHideGan() },
@@ -160,28 +191,23 @@
             ];
 
             let html = '';
-            pillars.forEach(p => {
-                let cg = p.c.map(c => `<div class="canggan-item"><span>${c}</span><span class="cg-ss">(${getShiShen(dayGan, c)})</span></div>`).join('');
-                html += `<div class="column"><div class="pillar-label">${p.t}</div><div class="gz-main-zone"><div class="shishen-main">${p.s}</div><div class="gan color-${wxMap[p.g]}">${p.g}</div><div class="zhi color-${wxMap[p.z]}">${p.z}</div></div><div class="canggan-box">${cg}</div></div>`;
+            pData.forEach(p => {
+                let label = isT ? s2t[p.t] : p.t;
+                let ssMain = isT ? (s2t[p.s] || p.s) : p.s;
+                let cg = p.c.map(c => `<div style="margin-bottom:2px">${c}(${getShiShen(dayGan, c)})</div>`).join('');
+                html += `<div class="column"><div class="pillar-label">${label}</div><div class="gz-main-zone"><div class="shishen-main">${ssMain}</div><div class="gan color-${wxMap[p.g]}">${p.g}</div><div class="zhi color-${wxMap[p.z]}">${p.z}</div></div><div class="canggan-box">${cg}</div></div>`;
             });
             document.getElementById('baziGrid').innerHTML = html;
 
             currentYun = bazi.getYun(gender);
-            document.getElementById('startInfo').innerText = `正式起运年份：${currentYun.getStartYear()}年 (命主约 ${currentYun.getStartYear() - solar.getYear() + 1} 岁)`;
+            document.getElementById('startInfo').innerText = `${isT?'正式起運年份':'正式起运年份'}：${currentYun.getStartYear()} (约${currentYun.getStartYear()-solar.getYear()+1}${isT?'歲':'岁'})`;
             
             let dyHtml = '';
             const dys = currentYun.getDaYun();
             for (let i = 1; i <= 8 && i < dys.length; i++) {
-                let dy = dys[i];
-                let gz = dy.getGanZhi();
-                let startAge = dy.getStartYear() - solar.getYear() + 1;
-                let endAge = dy.getEndYear() - solar.getYear() + 1;
-
-                dyHtml += `<div class="dayun-box" onclick="showLN(this, ${i})">
-                    <b class="color-${wxMap[gz[0]]}">${gz}</b><br>
-                    <span style="font-size:12px">${startAge} - ${endAge} 岁</span><br>
-                    <small style="color:#999">${dy.getStartYear()}年</small>
-                </div>`;
+                let dy = dys[i], gz = dy.getGanZhi();
+                let sAge = dy.getStartYear() - solar.getYear() + 1;
+                dyHtml += `<div class="dayun-box" onclick="showLN(this, ${i})"><b>${gz}</b><br><small>${sAge}${isT?'歲':'岁'}</small></div>`;
             }
             document.getElementById('dayunList').innerHTML = dyHtml;
             document.getElementById('liunianArea').style.display = 'none';
@@ -190,23 +216,14 @@
     }
 
     function showLN(el, idx) {
+        const isT = document.getElementById('langSelect').value === 'zh-hant';
         document.querySelectorAll('.dayun-box').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
-
-        const dy = currentYun.getDaYun()[idx];
-        const lns = dy.getLiuNian();
-        const birthYear = birthLunar.getSolar().getYear();
-        
-        document.getElementById('liunianTitle').innerText = `${dy.getGanZhi()}运 期间流年 (虚岁对照)`;
+        const dy = currentYun.getDaYun()[idx], lns = dy.getLiuNian(), birthY = birthLunar.getSolar().getYear();
         let lnHtml = '';
         lns.forEach(ln => {
-            let gz = ln.getGanZhi();
-            let age = ln.getYear() - birthYear + 1;
-            lnHtml += `<div class="liunian-box">
-                <div class="age-tag">${age} 岁</div>
-                <b class="color-${wxMap[gz[0]]}" style="font-size:16px">${gz}</b><br>
-                <small style="color:#888">${ln.getYear()}年</small>
-            </div>`;
+            let gz = ln.getGanZhi(), age = ln.getYear() - birthY + 1;
+            lnHtml += `<div class="liunian-box"><div class="age-tag">${age}${isT?'歲':'岁'}</div><b class="color-${wxMap[gz[0]]}">${gz}</b><br><small>${ln.getYear()}</small></div>`;
         });
         document.getElementById('liunianGrid').innerHTML = lnHtml;
         document.getElementById('liunianArea').style.display = 'block';
